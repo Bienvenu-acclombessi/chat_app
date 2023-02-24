@@ -47,23 +47,39 @@ class ChatRepository {
       return users;
     });
    }
-   Stream<List<dynamic>> getAllAppels() {
+   Future<List<UserModel>> getAllUsers() {
    return firestore
-        .collection('appels')
-        .where('uid_caller',isEqualTo: auth.currentUser!.uid)
+        .collection('users')
+        .where('uid',isNotEqualTo: auth.currentUser!.uid)
+        .get()
+        .then((event) {
+      List<UserModel> users = [];
+      for (var user in event.docs) {
+        users.add(UserModel.fromMap(user.data()));
+      }
+      return users;
+    });
+   }
+
+   Stream<List<dynamic>> getAllAppels(){
+   return firestore
+        .collection('appel_cours')
+        .where('id_receiver',isEqualTo: auth.currentUser!.uid)
+        .where('etat', isEqualTo: 2)
         .snapshots()
         .asyncMap((event) async{
       List<dynamic> appels = [];
       for (var call in event.docs) {
-          final user_uid= auth.currentUser!.uid==call.get('appeleur')?call.get('decrocheur'):call.get('appeleur');
-          final userData = await firestore
+           final userData = await firestore
             .collection('users')
-            .doc(user_uid)
+            .doc(call.get('callerId'))
             .get();
-        appels.add({'id_call': call.id,'user':UserModel.fromMap(userData.data()!) });
+            final req={'callId': call.id,'user': UserModel.fromMap(userData.data()!),'roomId': call.get('roomId'),'type':call.get('type') };
+         appels.add(req);
       }
       return appels;
     });
+   
    }
    Stream<List<dynamic>> getAllAppelsCours() {
    return firestore
@@ -153,6 +169,7 @@ class ChatRepository {
       for (var message in event.docs) {
         messages.add(MessageModel.fromMap(message.data()));
       }
+
       return messages;
     });
   }
@@ -186,6 +203,7 @@ class ChatRepository {
             .doc(lastMessage.contactId)
             .get();
         final user = UserModel.fromMap(userData.data()!);
+        final int nouveau=await nbrVue(user.uid);
         contacts.add(
           {
           'last' : LastMessageModel(
@@ -193,7 +211,8 @@ class ChatRepository {
             timeSent: lastMessage.timeSent,
             lastMessage: lastMessage.lastMessage,
           ),
-         'user' : user
+         'user' : user,
+         'nouveau': nouveau
           }
         );
       }
@@ -440,5 +459,79 @@ class ChatRepository {
       return "Vous a  envoyé une video";
     }
     return "Vous a  envoyé un fichier";
+  }
+
+  void marqueVue(String receiverId)async{
+         
+    // sender
+    await firestore
+        .collection('users')
+        .doc(auth.currentUser!.uid)
+        .collection('chats')
+        .doc(receiverId)
+        .collection('messages')
+        .where('isSeen',isEqualTo: false)
+        .where('senderId',isEqualTo: receiverId)
+        .get()
+        .then((messages) async{
+            for(var message in messages.docs)
+            {
+           firestore
+        .collection('users')
+        .doc(auth.currentUser!.uid)
+        .collection('chats')
+        .doc(receiverId)
+        .collection('messages')
+        .doc(message.id)
+        .update({
+          "isSeen":true
+        });
+
+            }
+        });
+    // receiver
+    await firestore
+        .collection('users')
+        .doc(receiverId)
+        .collection('chats')
+        .doc(auth.currentUser!.uid)
+        .collection('messages')
+        .where('isSeen',isEqualTo: false)
+        .where('senderId',isEqualTo: receiverId)
+        .get()
+        
+        .then((messages) async{
+            for(var message in messages.docs)
+            {
+           firestore
+        .collection('users')
+        .doc(receiverId)
+        .collection('chats')
+        .doc(auth.currentUser!.uid)
+        .collection('messages')
+        .doc(message.id)
+        .update({
+          "isSeen":true
+        });
+
+            }
+        });
+  }
+  Future<int> nbrVue(String receiverId)async{
+    // sender
+    await firestore
+        .collection('users')
+        .doc(auth.currentUser!.uid)
+        .collection('chats')
+        .doc(receiverId)
+        .collection('messages')
+        .where('isSeen',isEqualTo: false)
+        .get()
+        .then((value){
+            return value.size;
+        });
+
+
+    return 0;
   }
 }

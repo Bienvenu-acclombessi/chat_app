@@ -3,7 +3,7 @@ import 'package:chatapp/commun/models/userModel.dart';
 import 'package:chatapp/service/wrapper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:chatapp/appel/logiques/calltype.dart';
 import '../../../components/rounded_button.dart';
 import '../../../constants.dart';
 import '../../../logiques/suivre_call.dart';
@@ -49,6 +49,22 @@ class _BodyState extends State<Body> {
      });
          
       print("roomID: $roomId");
+      FirebaseFirestore.instance
+          .collection('appel_cours')
+          .doc(callId)
+          .snapshots()
+          .asyncMap((event) {
+        if (event.get('etat') == 2) {
+          if (callId != null) {
+            signaling.hangUp(_localVideoRenderer);
+          }
+          _localVideoRenderer.dispose();
+          _remoteRenderer.dispose();
+
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => Wrapper()));
+        }
+      });
     } else {
       callId= widget.callId;
       roomId = widget.roomId;
@@ -56,6 +72,22 @@ class _BodyState extends State<Body> {
         roomId!,
         _remoteRenderer,
       );
+      FirebaseFirestore.instance
+          .collection('appel_cours')
+          .doc(callId)
+          .snapshots()
+          .asyncMap((event) {
+        if (event.get('etat') == 2) {
+          if (callId != null) {
+            signaling.hangUp(_localVideoRenderer);
+          }
+          _localVideoRenderer.dispose();
+          _remoteRenderer.dispose();
+
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => Wrapper()));
+        }
+      });
     }
 
 
@@ -133,15 +165,7 @@ void dispose() async {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    RoundedButton(
-                      press: () {},
-                      iconSrc: "assets/icons/Icon Mic.svg",
-                    ),
-                    RoundedButton(
-                      press: () {},
-                      iconSrc: "assets/icons/Icon Video.svg",
-                    ),
-
+                    
                     RoundedButton(
                       press: () async{
 
@@ -151,6 +175,7 @@ void dispose() async {
                                   signaling.hangUp(_localVideoRenderer);
                        }
                         _localVideoRenderer.dispose();
+                         _remoteRenderer.dispose();
 
                         Navigator.push(context,MaterialPageRoute(builder: (context)=>Wrapper()));
                         
@@ -159,10 +184,7 @@ void dispose() async {
                       iconColor: Colors.white,
                       iconSrc: "assets/icons/call_end.svg",
                     ),
-                    RoundedButton(
-                      press: () {},
-                      iconSrc: "assets/icons/Icon Volume.svg",
-                    ),
+                    
                   ],
                 ),
               ],

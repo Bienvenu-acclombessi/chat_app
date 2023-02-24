@@ -1,61 +1,111 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:chatapp/service/wrapper.dart';
+import 'package:chatapp/commun/colors/colors.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Description extends StatefulWidget {
-  const Description({super.key});
+class Onboarding extends StatefulWidget {
+  const Onboarding({super.key});
 
   @override
-  State<Description> createState() => _DescriptionState();
+  State<Onboarding> createState() => _OnboardingState();
 }
 
-class _DescriptionState extends State<Description> {
+class _OnboardingState extends State<Onboarding> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xff5E2B9F),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: all,
+      body: getBody(),
+    );
+  }
+
+  Widget getBody() {
+    var size = MediaQuery.of(context).size;
+    return SafeArea(
+      child: Column(
         children: [
-          const Image(
-            image: AssetImage("assets/images/logo_description 9.jpg"),
-            width: 200,
-          ),
-          const SizedBox(
-            height: 50,
-          ),
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            child: RichText(
-                textAlign: TextAlign.center,
-                text: const TextSpan(children: [
-                  TextSpan(text: "Avec "),
-                  TextSpan(
-                      text: "ChatApp ",
+            width: size.width,
+            height: size.height < 600 ? 350.h : 450.h,
+            decoration: const BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage("assets/images/full_image.png"),
+                    fit: BoxFit.cover)),
+          ),
+          Expanded(
+              child: Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: white,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 30, top: 20, right: 30),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Expanded(
+                    child: Text(
+                      "Trouvez tes meilleurs potes ",
                       style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20)),
-                  TextSpan(
-                      text:
-                          "discuter avec vos proches n'a jamais été aussi facile")
-                ])),
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushReplacement(CupertinoPageRoute(
+                          fontSize: 25.sp, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      "let's find your informaticien partner \nto enjoy and learn learn more",
+                      style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.grey),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.h,
+                  ),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: (size.width - 100) / 2,
+                          height: 50.h,
+                          decoration: BoxDecoration(
+                              color: all,
+                              borderRadius: BorderRadius.circular(30)),
+                          child: Center(
+                            child: TextButton(
+                              onPressed: () async{
+                                final prefs = await SharedPreferences.getInstance();
+      prefs.setInt('exist', 1);
+                                                Navigator.of(context).pushReplacement(CupertinoPageRoute(
                     builder: (context) => const Wrapper()));
-              },
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.white),
+            
+                              },
+                              child: Text(
+                                "Get Started",
+                                style: TextStyle(fontSize: 15.sp, color: white),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                            width: (size.width - 100) / 5,
+                            height: 10.h,
+                            decoration: BoxDecoration(
+                                color: all,
+                                borderRadius: BorderRadius.circular(30))),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              child: const Text(
-                "Démarrer",
-                style: TextStyle(color: Color(0xff5E2B9F)),
-              ))
+            ),
+          ))
         ],
       ),
     );

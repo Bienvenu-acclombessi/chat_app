@@ -1,3 +1,4 @@
+import 'package:chatapp/commun/colors/colors.dart';
 import 'package:chatapp/commun/models/groupModel.dart';
 import 'package:chatapp/commun/models/userModel.dart';
 import '../../pages/group_info.dart';
@@ -35,7 +36,7 @@ class _ChatRoomState extends State<ChatRoom> {
               widget.group.groupName.substring(0, 1).toUpperCase(),
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  color: Color(0xff5E2B9F), fontWeight: FontWeight.w500),
+                  color: primary, fontWeight: FontWeight.w500),
             ),
           );
     }
@@ -46,7 +47,7 @@ class _ChatRoomState extends State<ChatRoom> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 100,
-        backgroundColor: const Color(0xff5E2B9F),
+        backgroundColor: primary,
         elevation: 0,
         centerTitle: false,
         title: Row(
@@ -79,7 +80,7 @@ class _ChatRoomState extends State<ChatRoom> {
               )),
         ],
       ),
-      backgroundColor: const Color(0xff5E2B9F),
+      backgroundColor: primary,
       body: Column(
         children: [
           //detail du chat

@@ -1,11 +1,13 @@
 
 import 'dart:io';
 
+import 'package:chatapp/commun/colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:social_media_recorder/audio_encoder_type.dart';
 import 'package:social_media_recorder/screen/social_media_recorder.dart';
+import 'package:social_media_recorder/widgets/show_mic_with_text.dart';
 
 import '../controller/controller_chat.dart';
 import 'chat_file_dialog.dart';
@@ -58,7 +60,7 @@ class _MessageSenderState extends State<MessageSender> {
   Widget build(BuildContext context) {
     return 
                   Container(
-                    color: Colors.grey[300],
+                    color: white,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 5.0),
                       child: Stack(
@@ -79,7 +81,7 @@ class _MessageSenderState extends State<MessageSender> {
                                     hintText: 'Message',
                                     hintStyle: TextStyle(color: Colors.grey),
                                     filled: true,
-                                    fillColor: Colors.white,
+                                    fillColor: Colors.grey[300],
                                     isDense: true,
                                     border: OutlineInputBorder(
                                       borderSide: const BorderSide(
@@ -137,7 +139,7 @@ class _MessageSenderState extends State<MessageSender> {
                                   Icons.send_outlined
 
                                 ),
-                                color: Colors.white,
+                                color: primary,
                               ),
                             ],
                           ),
@@ -149,10 +151,10 @@ class _MessageSenderState extends State<MessageSender> {
                               alignment: Alignment.centerRight,
                               child: SocialMediaRecorder(
                                 radius: BorderRadius.circular(50) ,
-                                backGroundColor: Colors.white,
+                                backGroundColor: Colors.grey[300],
                                 recordIcon: Icon(
                                   Icons.mic_none_outlined,
-                                  color: Color(0xff5E2B9F),
+                                  color: primary,
                                   size: 30,
                                 ),
                                 sendRequestFunction: (soundFile) async {

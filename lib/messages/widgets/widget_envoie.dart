@@ -1,6 +1,7 @@
 
 import 'dart:io';
 
+import 'package:chatapp/commun/colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -138,7 +139,7 @@ class _MessageSenderState extends State<MessageSender> {
                                 icon: const Icon(
                                   Icons.send_outlined
                                 ),
-                                color: const Color(0xff5E2B9F),
+                                color: primary,
                               ),
                             ],
                           ),
@@ -153,7 +154,7 @@ class _MessageSenderState extends State<MessageSender> {
                                 backGroundColor: Color(0xffD9D9D9),
                                 recordIcon: Icon(
                                   Icons.mic_none_outlined,
-                                  color: Color(0xff5E2B9F),
+                                  color: primary,
                                 ),
                                 sendRequestFunction: (soundFile) async {
                                   //  _assetsAudioPlayer.open(

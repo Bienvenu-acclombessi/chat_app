@@ -1,6 +1,9 @@
+import 'package:chatapp/commun/colors/colors.dart';
+import 'package:chatapp/commun/models/groupModel.dart';
+import 'package:chatapp/groupe/pages/search_group.dart';
 import 'package:chatapp/service/wrapper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../auth/auth_repository/auth_repository.dart';
 import '../pages/profile_page.dart';
 import '../pages/search_page.dart';
@@ -23,6 +26,7 @@ class _HomeGroupState extends State<HomeGroup> {
   Stream? groups;
   bool _isLoading = false;
   String groupName = "";
+  List<GroupModel> groupes=[];
 
   @override
   void initState() {
@@ -54,25 +58,34 @@ class _HomeGroupState extends State<HomeGroup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: () {
-                nextScreen(context, const SearchPage());
-              },
-              icon: const Icon(
-                Icons.search,
-              ))
-        ],
-        elevation: 0,
-        centerTitle: true,
-        backgroundColor: Color(0xff5E2B9F),
-        title: const Text(
-          "Groupes",
-          style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 27),
+       appBar: AppBar(
+          elevation: 0.0,
+          backgroundColor: white,
+          title: Text(
+            "Groupes",
+            style: TextStyle(
+                fontSize: 25.r, fontWeight: FontWeight.bold, color: black),
+          ),
+          actions: [
+            Container(
+                height: 25.h,
+                width: 30.h,
+                margin: const EdgeInsets.only(top: 10, bottom: 10, right: 20),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20), color: all),
+                child: IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context, MaterialPageRoute(builder: (context)=>SearchGroupPage(data: groupes,))
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.search_rounded,
+                      size: 20,
+                      color: white,
+                    )))
+          ],
         ),
-      ),
       body: groupList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -191,8 +204,10 @@ class _HomeGroupState extends State<HomeGroup> {
               return ListView.builder(
                 itemCount: snapshot.data.length!,
                 itemBuilder: (context, index) {
+                  
                   int reverseIndex = snapshot.data.length - index - 1;
                   final group=snapshot.data[index];
+                  groupes.add(group);
                   return GroupTile(group: group);
                 },
               );

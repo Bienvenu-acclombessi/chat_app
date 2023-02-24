@@ -186,23 +186,26 @@ class Signaling {
     RTCVideoRenderer remoteVideo,
   ) async {
     var stream = await navigator.mediaDevices
-        .getUserMedia({'video': {
-              'mandatory': {
-                'width':
-                    '640', // Provide your own width, height and frame rate here
-                'height': '480',
-                'frameRate': '30',
-              },
-              'facingMode': 'user',
-              'optional': [
-              ],
-            }, 'audio': true});
+        .getUserMedia({'video': true, 'audio': true});
 
     localVideo.srcObject = stream;
     localStream = stream;
 
     remoteVideo.srcObject = await createLocalMediaStream('key');
   }
+    Future<void> openUserMediaAudio(
+    RTCVideoRenderer localVideo,
+    RTCVideoRenderer remoteVideo,
+  ) async {
+    var stream = await navigator.mediaDevices
+        .getUserMedia({'audio': true});
+
+    localVideo.srcObject = stream;
+    localStream = stream;
+
+    remoteVideo.srcObject = await createLocalMediaStream('key');
+  }
+
 
   
   Future<MediaStream> createStream(String media, bool userScreen) async {

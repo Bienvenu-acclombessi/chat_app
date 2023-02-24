@@ -62,6 +62,9 @@ class ChatController {
   Stream<List<UserModel>> getAllUser() {
     return chatRepository.getAllUser();
   }
+  Future<List<UserModel>> getAllUsers() {
+    return chatRepository.getAllUsers();
+  }
   Stream<List<dynamic>> getAllLastMessageList() {
     return chatRepository.getAllLastMessageList();
   }

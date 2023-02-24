@@ -1,3 +1,6 @@
+import 'package:chatapp/commun/colors/colors.dart';
+import 'package:chatapp/commun/widgets/error_page.dart';
+import 'package:chatapp/home/widgets/contact_listile.dart';
 import 'package:chatapp/messages/pages/message_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +8,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../messages/controller/controller_chat.dart';
 import '../widgets/header.dart';
 import 'people.dart';
+
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'search_page.dart';
 
 class ContactList extends ConsumerStatefulWidget {
   const ContactList({super.key});
@@ -31,8 +38,34 @@ class _ContactListState extends ConsumerState<ContactList> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Contacts'),
-          backgroundColor: Color(0xff5E2B9F),
+          elevation: 0.0,
+          backgroundColor: white,
+          title: Text(
+            "Contacts",
+            style: TextStyle(
+                fontSize: 25.r, fontWeight: FontWeight.bold, color: black),
+          ),
+          actions: [
+            Container(
+                height: 25.h,
+                width: 30.h,
+                margin: const EdgeInsets.only(top: 10, bottom: 10, right: 20),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20), color: all),
+                child: IconButton(
+                    onPressed: () async{
+                      ref.read(chatControllerProvider).getAllUsers().then((users){
+  Navigator.push(
+                        context, MaterialPageRoute(builder: (context)=>SearchPage(data: users,))
+                      );                
+  });             
+                    },
+                    icon: const Icon(
+                      Icons.search_rounded,
+                      size: 20,
+                      color: white,
+                    )))
+          ],
         ),
         key: scaffoldKey,
         body: SingleChildScrollView(
@@ -63,63 +96,12 @@ class _ContactListState extends ConsumerState<ContactList> {
             shrinkWrap: true,
             itemBuilder: (context, index) {
               final data = snapshot.data![index];
-              return ListTile(
-                onTap: () {
-                  
-                Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ChatRoom(user: data) ));
-                },
-                leading: CircleAvatar(
-              backgroundImage: userImage(data.profileImageUrl!) ,
-            ),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('${data.prenom} ${data.nom}'),
-                    // Text(
-                    //   DateFormat.Hm().format(lastMessageData.timeSent),
-                    //   style: TextStyle(
-                    //     fontSize: 13,
-                    //     color: context.theme.greyColor,
-                    //   ),
-                    // ),
-                  ],
-                ),
-                subtitle: Padding(
-                  padding: const EdgeInsets.only(top: 3),
-                  child: Text(
-                    'En ligne',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ),
-                
-              );
+              return ContactListile(user: data);
             },
           );
               }else{
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      child: Center(
-                        child: Text('Vous n\'avez aucun contact sur chatapp  '),
-                      ),
-                      
-                    ),
-                    SizedBox(height: 20,),
-                    Container(
-                      child: Center(
-                        child: Text('Vos contacts s \'afficheront ici '),
-                      ),
-                      
-
-                    ),
-                  ],
-                );
+                 return ErrorPage(url_image:'assets/images/contact_no_found.png',texte:'Vous n\'avez effectué(e) aucun contact sur chatapp ');
+             
               }  }
             else{
           return Center(child: Text("Veuillez attendre"),);
@@ -133,8 +115,8 @@ class _ContactListState extends ConsumerState<ContactList> {
           )),
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Color(0xff5E2B9F),
-          child: Icon(Icons.add,color:Colors.white ),
+          backgroundColor: primary,
+          child: Icon(Icons.person_add,color:Colors.white ),
           onPressed: (){
             Navigator.push(
                         context,

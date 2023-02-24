@@ -1,4 +1,6 @@
 import 'package:chatapp/appel/pages/CallAccept/accept_call_page.dart';
+import 'package:chatapp/commun/widgets/error_page.dart';
+import 'package:chatapp/home/pages/search_page.dart';
 import 'package:chatapp/messages/pages/message_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../messages/controller/controller_chat.dart';
 import '../widgets/header.dart';
 import 'people.dart';
+import 'package:chatapp/commun/colors/colors.dart';
+
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CallList extends ConsumerStatefulWidget {
   const CallList({super.key});
@@ -32,8 +37,32 @@ class _CallListState extends ConsumerState<CallList> {
 
     return Scaffold(
        appBar: AppBar(
-          title: Text('Appels'),
-          backgroundColor: Color(0xff5E2B9F),
+          elevation: 0.0,
+          backgroundColor: white,
+          title: Text(
+            "Appels",
+            style: TextStyle(
+                fontSize: 25.r, fontWeight: FontWeight.bold, color: black),
+          ),
+          actions: [
+            Container(
+                height: 25.h,
+                width: 30.h,
+                margin: const EdgeInsets.only(top: 10, bottom: 10, right: 20),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20), color: all),
+                child: IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context, MaterialPageRoute(builder: (context)=>SearchPage())
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.search_rounded,
+                      size: 20,
+                      color: white,
+                    )))
+          ],
         ),
         key: scaffoldKey,
         body: SingleChildScrollView(
@@ -96,16 +125,7 @@ class _CallListState extends ConsumerState<CallList> {
             },
           );
               }else{
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      child: Center(
-                        child: Text('Aucun appel effectué'),
-                      ),
-                    )
-                  ],
-                );
+                return ErrorPage(url_image:'assets/images/call_no_found.png',texte:'Vous n\'avez effectué(e) aucun appel ');
               }  }
             else{
           return Center(child: Text("Veuillez attendre"),);
@@ -119,7 +139,7 @@ class _CallListState extends ConsumerState<CallList> {
           )),
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Color(0xff5E2B9F),
+          backgroundColor: primary,
           child: Icon(Icons.add,color:Colors.white ),
           onPressed: (){
             Navigator.push(

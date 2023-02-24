@@ -1,226 +1,232 @@
-
+import 'package:chatapp/auth/auth_repository/auth_repository.dart';
+import 'package:chatapp/auth/widgets/utils.dart';
+import 'package:chatapp/commun/colors/colors.dart';
 import 'package:chatapp/commun/models/userModel.dart';
+import 'package:chatapp/home/widgets/changeImageDialogue.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key, required this.user});
+class UpdateProfil extends ConsumerStatefulWidget {
+  const UpdateProfil({super.key});
 
-  final UserModel user;
+  @override
+  ConsumerState<UpdateProfil> createState() => _UpdateProfilState();
+}
 
+class _UpdateProfilState extends ConsumerState<UpdateProfil> {
+  final keyForm = GlobalKey<FormState>();
+  final nameController = TextEditingController();
+  final fNameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passController = TextEditingController();
+  final currentUser =FirebaseAuth.instance.currentUser;
+ ImageProvider<Object>? userImage(String url){
+    if(url.isNotEmpty)
+    {
+      return NetworkImage(url) ;
+    }else{
+      return const AssetImage('assets/images/userImage.png') ;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: CustomScrollView(
-        slivers: [
-          SliverPersistentHeader(
-            delegate: SliverPersistentDelegate(user),
-            pinned: true,
-          ),
-          // lets create a long list to make the content scrollable
-          SliverToBoxAdapter(
-            child: Column(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        // leading: IconButton(
+        //     onPressed: () => Navigator.pop(context),
+        //     icon: const Icon(
+        //       Icons.backspace,
+        //       color: black,
+        //     )),
+        title: Text(
+          "Modifier mon profil",
+          style: Theme.of(context).textTheme.headline5,
+        ),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: StreamBuilder<UserModel>(
+        stream: ref.watch(authProvider).getUser(uid:currentUser!.uid),
+        builder: (_, snapshot) {
+          if ( snapshot.connectionState != ConnectionState.active) {
+            return const Center(
+              child: CircularProgressIndicator(
+                color: Colors.black,
+              ),
+            );
+          }
+            if (snapshot.hasData ) {
+              nameController.text=snapshot.data!.nom;
+             fNameController.text=snapshot.data!.prenom;
+             emailController.text=snapshot.data!.email;
+           return Column(
               children: [
-                Container(
-                  color: Theme.of(context).backgroundColor,
-                  child: Column(
-                    children: [
-                      Text(
-                        user.nom,
-                        style: const TextStyle(fontSize: 24),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        user.email,
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
+                 Stack(
+                children: [
+                  SizedBox(
+                    width: 120,
+                    height: 120,
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child:  Image(
+                            image: userImage(snapshot.data!.profileImageUrl!)! )),
+                  ),
+                  Positioned(
+                      bottom: 0,
+                      right: -10,
+                         
+                      child: TextButton(
+                        onPressed: (){
+    ChangeImageDialogue(user: currentUser,ref: ref).showImageMessageDialog(context, ImageSource.gallery);
+                   
+                        },
+                        child: Container(
+                          width: 30,
+                          height: 30,
+                          decoration: BoxDecoration(
+                             borderRadius: BorderRadius.circular(100),
+                              color: all.withOpacity(0.8)
+                              ),
+                          child: Icon(
+                               Icons.update,
+                                color: white,
+                              ),
+                        ),
+                      ))
+                ],
+              ),
+                const SizedBox(
+                  height: 50,
+                ),
+                Form(
+                  key:keyForm,
+                    child: Column(
+                  children: [
+                    ProfilField(
+                      nameController: nameController,
+                      kbt: TextInputType.text,
+                      icon: Icons.person,
+                      hText: 'Change your name',
+                      label: 'Nom',
+                      validator: (value) =>
+                                            validatioName(value!),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    ProfilField(
+                      nameController: fNameController,
+                      kbt: TextInputType.text,
+                      icon:Icons.person,
+                      hText: 'Change your first name',
+                      label: 'Prenom',
+                       validator: (value) =>
+                                            validatioFname(value!)
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    ProfilField(
+                      nameController: emailController,
+                      kbt: TextInputType.text,
+                      icon: Icons.mail,
+                      hText: 'Change your email',
+                      label: 'email',
+                       validator: (value) =>
+                                            validatioEmail(value!),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 45,
+                      child: ElevatedButton(
+                        onPressed: () async{
+                           if (keyForm.currentState!.validate()) {
+                                       await AuthService().updateProfile(
+                                        uid: snapshot.data!.uid,
+                                                email: emailController.text,
+                                                nom: nameController.text,
+                                                prenom: fNameController.text,
+                                                context: context);
+                                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: all,
+                            foregroundColor: white,
+                            shape: const StadiumBorder()),
+                        child: Text(
+                          "Modifier",
+                          style: TextStyle(
+                              fontSize: 20.r, fontWeight: FontWeight.bold),
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      Text(
-                        "last seen 10 ago",
-                       
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          iconWithText(icon: Icons.call, text: 'Call'),
-                          iconWithText(icon: Icons.video_call, text: 'Video'),
-                          iconWithText(icon: Icons.search, text: 'Search'),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                ListTile(
-                  contentPadding: const EdgeInsets.only(left: 30),
-                  title: const Text('Hey there! I am using WhatsApp'),
-                  subtitle: Text(
-                    '17th February',
-                    
-                  ),
-                ),
-                const SizedBox(height: 20),
-                
-                const SizedBox(height: 20),
-                ListTile(
-                  contentPadding: const EdgeInsets.only(left: 25, right: 10),
-                  leading: const Icon(
-                    Icons.block,
-                    color: Color(0xFFF15C6D),
-                  ),
-                  title: Text(
-                    'Block ${user.nom}',
-                    style: const TextStyle(
-                      color: Color(0xFFF15C6D),
-                    ),
-                  ),
-                ),
-                ListTile(
-                  contentPadding: const EdgeInsets.only(left: 25, right: 10),
-                  leading: const Icon(
-                    Icons.thumb_down,
-                    color: Color(0xFFF15C6D),
-                  ),
-                  title: Text(
-                    'Report ${user.nom}',
-                    style: const TextStyle(
-                      color: Color(0xFFF15C6D),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 40),
+                    )
+                  ],
+                ))
               ],
-            ),
+            );
+             }else{
+              return Center(
+                child: Text('Une erreur est produite'),
+              );
+            }
+             })
           ),
-        ],
-      ),
-    );
-  }
-
-  iconWithText({required IconData icon, required String text}) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 30,
-            color: Colors.green,
-          ),
-          const SizedBox(height: 10),
-          Text(
-            text,
-            style: const TextStyle(color: Colors.green),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class SliverPersistentDelegate extends SliverPersistentHeaderDelegate {
-  final UserModel user;
+class ProfilField extends StatelessWidget {
+  const ProfilField({
+    Key? key,
+    required this.nameController,
+    required this.kbt,
+    required this.icon,
+    required this.hText,
+    required this.label,
+    required this.validator
+  }) : super(key: key);
 
-  final double maxHeaderHeight = 180;
-  final double minHeaderHeight = kToolbarHeight + 20;
-  final double maxImageSize = 130;
-  final double minImageSize = 40;
-  ImageProvider<Object>? userImage(String url){
-    if(url.isNotEmpty)
-    {
-      return NetworkImage(user.profileImageUrl!) ;
-    }else{
-      return const AssetImage('assets/images/userImage.png') ;
-    }
-  }
-  SliverPersistentDelegate(this.user);
+  final TextEditingController nameController;
+  final TextInputType kbt;
+  final IconData icon;
+  final String hText;
+  final String label;
+  final validator;
 
   @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    final size = MediaQuery.of(context).size;
-    final percent = shrinkOffset / (maxHeaderHeight - 35);
-    final percent2 = shrinkOffset / (maxHeaderHeight);
-    final currentImageSize = (maxImageSize * (1 - percent)).clamp(
-      minImageSize,
-      maxImageSize,
-    );
-    final currentImagePosition = ((size.width / 2 - 65) * (1 - percent)).clamp(
-      minImageSize,
-      maxImageSize,
-    );
-    return Container(
-      color: Theme.of(context).backgroundColor,
-      child: Container(
-        color: Color(0xff5E2B9F)
-            .withOpacity(percent2 * 2 < 1 ? percent2 * 2 : 1),
-        child: Stack(
-          children: [
-            Positioned(
-              top: MediaQuery.of(context).viewPadding.top + 15,
-              left: currentImagePosition + 50,
-              child: Text(
-                user.nom,
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.white.withOpacity(percent2),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 0,
-              top: MediaQuery.of(context).viewPadding.top + 5,
-              child: BackButton(
-                color:
-                    percent2 > .3 ? Colors.white.withOpacity(percent2) : null,
-              ),
-            ),
-            Positioned(
-              right: 0,
-              top: MediaQuery.of(context).viewPadding.top + 5,
-              child: IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.more_vert),
-              ),
-            ),
-            Positioned(
-              left: currentImagePosition,
-              top: MediaQuery.of(context).viewPadding.top + 5,
-              bottom: 0,
-              child: Hero(
-                tag: 'profile',
-                child: Container(
-                  width: currentImageSize,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      image: userImage(user.profileImageUrl!)!,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: nameController,
+      keyboardType: kbt,
+      validator:validator,
+      decoration: InputDecoration(
+        label: Text(label),
+        labelStyle: const TextStyle(color: purple),
+        hintText: hText,
+        suffixIcon: Icon(
+          icon,
+          color: all,
         ),
+        enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(width: 2, color: all),
+            borderRadius: BorderRadius.circular(15)),
+        focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(width: 2, color: purple),
+            borderRadius: BorderRadius.circular(15)),
       ),
     );
-  }
-
-  @override
-  double get maxExtent => maxHeaderHeight;
-
-  @override
-  double get minExtent => minHeaderHeight;
-
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
-    return false;
   }
 }

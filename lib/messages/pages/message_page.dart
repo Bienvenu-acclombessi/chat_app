@@ -1,4 +1,6 @@
+import 'package:chatapp/appel/pages/audioCall/audio_page_call.dart';
 import 'package:chatapp/appel/pages/videoCall/video_page_call.dart';
+import 'package:chatapp/commun/colors/colors.dart';
 import 'package:chatapp/commun/models/userModel.dart';
 import 'package:chatapp/home/pages/profil.dart';
 import 'package:chatapp/messages/widgets/messages_list_widget.dart';
@@ -6,7 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
-
+import 'package:chatapp/appel/logiques/calltype.dart';
 import '../widgets/widget_envoie.dart';
 
 class ChatRoom extends StatefulWidget {
@@ -32,14 +34,14 @@ class _ChatRoomState extends State<ChatRoom> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 100,
-        backgroundColor: const Color(0xff5E2B9F),
+        backgroundColor: primary,
         elevation: 0,
         centerTitle: false,
         title: Row(
           children: [
             InkWell(
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage(user: widget.user)));
+             //   Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage(user: widget.user)));
               },
               child: CircleAvatar(
                 radius: 30,
@@ -66,7 +68,7 @@ class _ChatRoomState extends State<ChatRoom> {
               onPressed: () async{
                 if (await Permission.camera.request().isGranted) {
                           if (await Permission.microphone.request().isGranted) {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>VideoPageCall(callType: CallType.calling , user: widget.user)));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>AudioPageCall(callType: CallType.calling , user: widget.user)));
         
 }
 }
@@ -92,7 +94,7 @@ class _ChatRoomState extends State<ChatRoom> {
               ))
         ],
       ),
-      backgroundColor: const Color(0xff5E2B9F),
+      backgroundColor: primary ,
       body: Column(
         children: [
           //detail du chat

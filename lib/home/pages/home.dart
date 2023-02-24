@@ -1,10 +1,16 @@
+import 'package:chatapp/auth/auth_repository/auth_repository.dart';
+import 'package:chatapp/home/widgets/last_message_list.dart';
+import 'package:chatapp/home/widgets/user_online.dart';
 import 'package:chatapp/messages/pages/message_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:chatapp/commun/colors/colors.dart';
 import '../../messages/controller/controller_chat.dart';
 import '../widgets/header.dart';
 import 'people.dart';
+import 'search_page.dart';
 
 class MyHome extends ConsumerStatefulWidget {
   const MyHome({super.key});
@@ -31,8 +37,33 @@ class _MyHomeState extends ConsumerState<MyHome> {
 
     return Scaffold(
         appBar: AppBar(
-          title:const Text('Discussions'),
-          backgroundColor:const Color(0xff5E2B9F)
+          elevation: 0.0,
+          backgroundColor: white,
+          title: Text(
+            "Messages",
+            style: TextStyle(
+                fontSize: 25.r, fontWeight: FontWeight.bold, color: black),
+          ),
+          actions: [
+            Container(
+                height: 25.h,
+                width: 30.h,
+                margin: const EdgeInsets.only(top: 10, bottom: 10, right: 20),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20), color: all),
+                child: IconButton(
+                    onPressed: () async{
+  ref.read(chatControllerProvider).getAllUsers().then((users){
+  Navigator.push(
+                        context, MaterialPageRoute(builder: (context)=>SearchPage(data: users,))
+                      );                
+  });                    },
+                    icon: const Icon(
+                      Icons.search_rounded,
+                      size: 20,
+                      color: white,
+                    )))
+          ],
         ),
         key: scaffoldKey,
         body: SingleChildScrollView(
@@ -47,75 +78,15 @@ class _MyHomeState extends ConsumerState<MyHome> {
                 const SizedBox(
                   height: 15,
                 ),
-                Expanded(
-                  child: StreamBuilder<List<dynamic>>(
-        stream: ref.watch(chatControllerProvider).getAllLastMessageList(),
-        builder: (_, snapshot) {
-          if ( snapshot.connectionState != ConnectionState.active) {
-            return const Center(
-              child: CircularProgressIndicator(
-                color: Colors.black,
-              ),
-            );
-          }
-            if(snapshot.hasData){
-          return ListView.builder(
-            itemCount: snapshot.data!.length ,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              final data = snapshot.data![index];
-             final lastMessageData=data['last'];
-              return ListTile(
-                onTap: () {
-                  
-                Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ChatRoom(user: data['user']) ));
-                },
-                leading: CircleAvatar(
-              backgroundImage: userImage(data['user'].profileImageUrl!) ,
-            ),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('${data['user'].prenom} ${data['user'].nom}'),
-                    // Text(
-                    //   DateFormat.Hm().format(lastMessageData.timeSent),
-                    //   style: TextStyle(
-                    //     fontSize: 13,
-                    //     color: context.theme.greyColor,
-                    //   ),
-                    // ),
-                  ],
-                ),
-                subtitle: Padding(
-                  padding: const EdgeInsets.only(top: 3),
-                  child: Text(
-                    lastMessageData.lastMessage,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ),
-                
-              );
-            },
-          );
-            }
-            else{
-          return Center(child: Text("Veuillez attendre"),);
-        }
-        },
-      ),
-                 )
+                UserOnline(),
+                LastMessageList()
                 
               ],
             ),
           )),
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Color(0xff5E2B9F),
+          backgroundColor: primary,
           child: Icon(Icons.add,color:Colors.white ),
           onPressed: (){
             Navigator.push(

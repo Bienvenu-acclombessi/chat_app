@@ -2,9 +2,9 @@
 import 'package:chatapp/appel/logiques/suivre_call.dart';
 import 'package:chatapp/appel/pages/CallAccept/accept_call_page.dart';
 import 'package:chatapp/auth/auth_repository/auth_repository.dart';
-import 'package:chatapp/auth/pages/login.dart';
+import 'package:chatapp/auth/pages/login2.dart';
 import 'package:chatapp/commun/models/userModel.dart';
-import 'package:chatapp/home/pages/dashboard.dart';
+import 'package:chatapp/home/pages/route_app.dart';
 import 'package:chatapp/messages/controller/controller_chat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,10 +38,10 @@ class Wrapper extends ConsumerWidget {
 return AcceptCallScreen(callId: data['callId'], roomId: data['roomId'], user: data['user'], type: data['type'])   
             ;
               }else{
-                return DashBoard();
+                return RootApp();
               }  }
             else{
-          return DashBoard();
+          return RootApp();
         }
         },
       );   

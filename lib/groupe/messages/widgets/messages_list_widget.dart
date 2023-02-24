@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:chatapp/commun/colors/colors.dart';
 import 'package:chatapp/commun/models/groupModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
@@ -13,6 +14,8 @@ import '../../../commun/enumeration/message_type.dart';
 import '../../../commun/models/userModel.dart';
 import '../controller/controller_chat.dart';
 
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../widgets/j_audio_widget.dart';
@@ -59,6 +62,7 @@ class _ChatDetailState extends ConsumerState<ChatDetail> {
   //jeu variable
   final _textController = new TextEditingController();
   _ChatDetailState( this.group);
+   var dateCours = Map<int, String>();
   @override
   void initState() {
     super.initState();
@@ -89,23 +93,28 @@ class _ChatDetailState extends ConsumerState<ChatDetail> {
       child: StreamBuilder(
           stream: ref.watch(chatControllerProvider).getAllOneToOneMessage(group.groupId),
           builder: ((context, AsyncSnapshot snapshot) {
+             dateCours.clear();
             if (snapshot.hasError) {
               return Center(
                 child: Text("Une erreur s'est produite"),
               );
             }
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Text("Chargement de vos messages", style: TextStyle(color: Colors.white)),
-                    ),
-                    CircularProgressIndicator(
-                      color: Colors.white
-                    )
-                  ],
-                );
+              return Expanded(
+                child: Container(
+                  color: white,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Center(
+                        child: Text("Chargement de vos messages",
+                            style: TextStyle(color: dark)),
+                      ),
+                      CircularProgressIndicator(color: primary)
+                    ],
+                  ),
+                ),
+              );
             }
             if (snapshot.hasData) {
               var data;
@@ -113,7 +122,7 @@ class _ChatDetailState extends ConsumerState<ChatDetail> {
                 padding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: const BoxDecoration(
-                  color: Color(0xffD9D9D9),
+                  color: white,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30))),
@@ -127,11 +136,54 @@ class _ChatDetailState extends ConsumerState<ChatDetail> {
                               shrinkWrap: true,
                               itemBuilder: (_, index) {
                                 final message = snapshot.data?[index];
-                      bool isMe = message['message'].senderId == FirebaseAuth.instance.currentUser!.uid;
-                      return Container(
+                     bool isMe = message['message'].senderId ==
+                              FirebaseAuth.instance.currentUser!.uid;
+                          dateCours[index] = formattingDate(message['message'].timeSent);
+                          if (index + 1 < snapshot.data!.length) {
+                            dateCours[index + 1] = formattingDate(
+                                snapshot.data?[index + 1]['message'].timeSent);
+                          }
+                            return Container(
                           margin: const EdgeInsets.only(top: 10),
                           child: Column(
                             children: [
+                                 index == 0
+                                      ? SizedBox()
+                                      : index + 1 < snapshot.data!.length
+                                          ? dateCours[index] ==
+                                                  dateCours[index + 1]
+                                              ? SizedBox()
+                                              : Center(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        vertical: 8.0),
+                                                    child: Text(
+                                                        formattingDate(
+                                                            message['message'].timeSent),
+                                                        style: const TextStyle(
+                                                            fontSize: 10,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w400)),
+                                                  ),
+                                                )
+                                          : SizedBox(),
+                                  index == snapshot.data!.length - 1
+                                      ? Center(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 8.0),
+                                            child: Text(
+                                                formattingDate(
+                                                    message['message'].timeSent),
+                                                style: const TextStyle(
+                                                    fontSize: 10,
+                                                    fontWeight:
+                                                        FontWeight.w400)),
+                                          ),
+                                        )
+                                      : SizedBox(),
                               Row(
                                 mainAxisAlignment: isMe
                                     ? MainAxisAlignment.end
@@ -152,9 +204,8 @@ class _ChatDetailState extends ConsumerState<ChatDetail> {
                                           maxWidth: width * 0.7),
                                       decoration: BoxDecoration(
                                           color: isMe
-                                              ? const Color(0xff5E2B9F)
-                                              : const Color.fromARGB(
-                                                  255, 195, 142, 231),
+                                              ? primary
+                                              : const Color(0xffD9D9D9),
                                           borderRadius: BorderRadius.only(
                                               topLeft:
                                                   const Radius.circular(16),
@@ -229,53 +280,50 @@ class _ChatDetailState extends ConsumerState<ChatDetail> {
                                             ),
                                           )
                                         ]),
-                                        Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Expanded(
-                                            child: Text(message['message'].textMessage,
-                                                style: TextStyle(
-                                                    color: isMe
-                                                        ? Colors.white
-                                                        : Colors.black),
-                                                maxLines: 100,
-                                                overflow:
-                                                    TextOverflow.ellipsis),
-                                          )
-                                        ],
-                                      ),
+                                        Text(message['message'].textMessage,
+                                            style: TextStyle(
+                                                color: isMe
+                                                    ? Colors.white
+                                                    : Colors.black),
+                                            maxLines: 100,
+                                            overflow:
+                                                TextOverflow.ellipsis),
                                       
                                         ],
                                       )
                                       ),
                                 ],
                               ),
+                              
                               Padding(
-                                padding: const EdgeInsets.only(top: 5),
-                                child: Row(
-                                  mainAxisAlignment: isMe
-                                      ? MainAxisAlignment.end
-                                      : MainAxisAlignment.start,
-                                  children: [
-                                    if (!isMe)
-                                      const SizedBox(
-                                        width: 40,
-                                      ),
-                                    const Icon(
-                                      Icons.done_all,
-                                      size: 20,
+                                    padding: const EdgeInsets.only(top: 5),
+                                    child: Row(
+                                      mainAxisAlignment: isMe
+                                          ? MainAxisAlignment.end
+                                          : MainAxisAlignment.start,
+                                      children: [
+                                        if (!isMe)
+                                          const SizedBox(
+                                            width: 40,
+                                          ),
+
+                                        // if (isMe)
+                                        //   const Icon(
+                                        //   Icons.done_all,
+                                        //   size: 20,
+                                        // ),
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Text(
+                                          '${formattingDateMessage(message['message'].timeSent)}',
+                                          style: const TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w400),
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(
-                                      width: 8,
-                                    ),
-                                    Text('${message['message'].timeSent}',
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w400),
-                                    )
-                                  ],
-                                ),
-                              )
+                                  )
                             ],
                           ));
                                 
@@ -288,6 +336,20 @@ class _ChatDetailState extends ConsumerState<ChatDetail> {
             }
           })),
     );
+  }
+
+  String formattingDate(date) {
+    initializeDateFormatting('fr', null);
+    DateTime? dateTime = date;
+    DateFormat dateFormat = DateFormat.yMMMEd('fr');
+    return dateFormat.format(dateTime ?? DateTime.now());
+  }
+
+  String formattingDateMessage(date) {
+    initializeDateFormatting('fr', null);
+    DateTime? dateTime = date;
+    DateFormat dateFormat = DateFormat.Hm('fr');
+    return dateFormat.format(dateTime ?? DateTime.now());
   }
   //fonction de audio
 }

@@ -2,13 +2,16 @@ import 'package:chatapp/commun/models/userModel.dart';
 import 'package:chatapp/service/wrapper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final userconnect = StreamProvider((ref) => AuthService().user);
-
+final authProvider= Provider((ref) => AuthService());
 class AuthService {
+  
+   FirebaseStorage _storage= FirebaseStorage.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   Future<void> signUp({
     required String email,
@@ -56,11 +59,15 @@ class AuthService {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No user found for that mail')),
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('No user found for that mail',style: TextStyle(color:Colors.white),)),
         );
       } else if (e.code == 'wrong-password') {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Mot de passe incorect')),
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Mot de passe incorect',style: TextStyle(color:Colors.white),)),
         );
       }
     }
@@ -77,5 +84,86 @@ class AuthService {
     } else {
       return true;
     }
+  }
+
+
+
+Stream<UserModel> getUser({required String uid}) {
+  return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .snapshots()
+        .map((event) => UserModel.fromMap(event.data()!));
+}
+  Stream<UserModel> getUserPresenceStatus({required String uid}) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .snapshots()
+        .map((event) => UserModel.fromMap(event.data()!));
+  }
+
+
+  //La presence de l'utilisateur
+  
+  void updateUserPresence() {
+    Map<String, dynamic> online = {
+      'active': true,
+      'lastSeen': DateTime.now().millisecondsSinceEpoch,
+    };
+    Map<String, dynamic> offline = {
+      'active': false,
+      'lastSeen': DateTime.now().millisecondsSinceEpoch,
+    };
+
+    final connectedCollection = FirebaseFirestore.instance.collection('connected');
+
+  }
+  Future<String> uploadFile(file) async{
+    Reference reference=_storage.ref().child('imageProfil/${DateTime.now()}.png');
+ UploadTask uploadTask= reference.putFile(file);
+ TaskSnapshot taskSnapshot=await uploadTask;
+ return await taskSnapshot.ref.getDownloadURL();
+  }
+  updatePhotoProfile({ required String uid, required String  link})async{
+  await  FirebaseFirestore.instance.collection('users').doc(uid).update({
+        "profileImageUrl": link
+    });
+  }
+   updateProfile({required context, required String uid, required String  nom,required String  prenom,required String  email})async{
+  await  FirebaseFirestore.instance.collection('users').doc(uid).update({
+        "nom": nom,
+        "prenom": prenom,
+        "email" : email
+    }).then((value) {
+ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.green,
+            content: Text('Mise à jour effectuer avce succès',style: TextStyle(color:Colors.white),)),
+        );
+    }).catchError((){
+ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Une erreur s\'est produite ',style: TextStyle(color:Colors.white),)),
+        );
+    });
+    
+  }
+     updatePassword({  required context,required String  nouveauPassword})async{
+  await  FirebaseAuth.instance.currentUser!.updatePassword(nouveauPassword).then((value) {
+ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.green,
+            content: Text('Mise à jour effectuer avce succès',style: TextStyle(color:Colors.white),)),
+        );
+    }).catchError((){
+ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Une erreur s\'est produite ',style: TextStyle(color:Colors.white),)),
+        );
+    });
+    ;
   }
 }

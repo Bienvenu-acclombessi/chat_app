@@ -1,6 +1,7 @@
+import 'package:chatapp/appel/pages/audioCall/audio_page_call.dart';
 import 'package:chatapp/appel/pages/videoCall/video_page_call.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:chatapp/appel/logiques/calltype.dart';
 import '../../../../commun/models/userModel.dart';
 import '../../../components/dial_user_pic.dart';
 import '../../../components/rounded_button.dart';
@@ -72,8 +73,9 @@ class _BodyState extends State<Body> {
       Navigator.push(context, MaterialPageRoute(builder:(context)=>VideoPageCall(callId:widget.callId , roomId: widget.roomId, user: widget.user, callType: CallType.accepted) ) );
             
                   }else{
-  
-      Navigator.push(context, MaterialPageRoute(builder:(context)=>VideoPageCall(callId:widget.callId , roomId: widget.roomId, user: widget.user, callType: CallType.accepted) ) );
+  await FirebaseFirestore.instance.collection('appel_cours').doc(widget.callId).update({'etat': 1}); //accepter
+      
+      Navigator.push(context, MaterialPageRoute(builder:(context)=>AudioPageCall(callId:widget.callId , roomId: widget.roomId, user: widget.user, callType: CallType.accepted) ) );
             
                   }
                 },
