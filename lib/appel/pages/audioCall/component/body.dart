@@ -53,7 +53,7 @@ class _BodyState extends State<Body> {
       ChatAppel(
               firestore: FirebaseFirestore.instance,
               auth: FirebaseAuth.instance)
-          .addCall(roomId!, widget.user.uid, 'video')
+          .addCall(roomId!, widget.user.uid, 'audio')
           .then((value) {
         callId = value;
       });

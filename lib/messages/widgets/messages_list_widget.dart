@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:chatapp/commun/colors/colors.dart';
+import 'package:chatapp/commun/widgets/error_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -123,7 +124,22 @@ class _ChatDetailState extends ConsumerState<ChatDetail> {
               );
             }
             if (snapshot.hasData) {
-              var data;
+              if(snapshot.data.length==0){
+            return   Container(
+                padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: const BoxDecoration(
+                  color: white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30))),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30)),
+                child:ErrorPage(url_image:'assets/images/chat_no_found.png',texte:'Soyez le premier à envoyer le message ')
+              ));
+              }else
               return Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),

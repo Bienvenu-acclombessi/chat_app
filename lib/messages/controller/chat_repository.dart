@@ -440,7 +440,7 @@ class ChatRepository {
       return "Vous avez envoyé une image";
     }
     else if(msgt==MessageType.audio){
-     return "Vous avez envoyé une audio";
+     return "Vous avez envoyé un audio";
     }
     else if(msgt==MessageType.video){
       return "Vous avez envoyé une video";
@@ -453,7 +453,7 @@ class ChatRepository {
       return "Vous a  envoyé une image";
     }
     else if(msgt==MessageType.audio){
-     return "Vous a  envoyé une audio";
+     return "Vous a  envoyé un audio";
     }
     else if(msgt==MessageType.video){
       return "Vous a  envoyé une video";

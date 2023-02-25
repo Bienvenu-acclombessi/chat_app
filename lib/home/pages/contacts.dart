@@ -118,10 +118,11 @@ class _ContactListState extends ConsumerState<ContactList> {
           backgroundColor: primary,
           child: Icon(Icons.person_add,color:Colors.white ),
           onPressed: (){
-            Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => People() ));
+              ref.read(chatControllerProvider).getAllUsers().then((users){
+  Navigator.push(
+                        context, MaterialPageRoute(builder: (context)=>SearchPage(data: users,))
+                      );                
+  });             
           },
         )
         );

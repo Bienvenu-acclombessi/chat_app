@@ -89,10 +89,11 @@ class _MyHomeState extends ConsumerState<MyHome> {
           backgroundColor: primary,
           child: Icon(Icons.add,color:Colors.white ),
           onPressed: (){
-            Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => People() ));
+            ref.read(chatControllerProvider).getAllUsers().then((users){
+  Navigator.push(
+                        context, MaterialPageRoute(builder: (context)=>SearchPage(data: users,))
+                      );                
+  });             
           },
         )
         );
