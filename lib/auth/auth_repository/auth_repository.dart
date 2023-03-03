@@ -13,14 +13,51 @@ class AuthService {
   
    FirebaseStorage _storage= FirebaseStorage.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  Future<void> signUp({
+//   Future<void> signUp({
+//     required String email,
+//     required String password,
+//     required String nom,
+//     required String prenom,
+//     required context
+//   }) async {
+//     try {
+//       await _auth
+//           .createUserWithEmailAndPassword(
+//         email: email,
+//         password: password,
+//       )
+//           .then((value) async {
+//  final user=UserModel(nom: nom, prenom: prenom, email: email, uid: value.user!.uid, active: true, lastSeen: DateTime.now().millisecondsSinceEpoch);
+//         await FirebaseFirestore.instance
+//             .collection('users')
+//             .doc(value.user!.uid)
+//             .set(user.toMap()).then((add_success) {
+//           Navigator.pushReplacement(
+//               context, MaterialPageRoute(builder: (context) => Wrapper()));
+//         });
+//       });
+//     } on FirebaseAuthException catch (e) {
+//       if (e.code == 'weak-password') {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(content: Text('The password provided is too weak.')),
+//         );
+//       } else if (e.code == 'email-already-in-use') {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(content: Text('Cet email existe deja')),
+//         );
+//       }
+//     } catch (e) {
+//       print(e);
+//     }
+//   }
+Future<void> signUp({
     required String email,
     required String password,
     required String nom,
     required String prenom,
     required context
   }) async {
-    try {
+   
       await _auth
           .createUserWithEmailAndPassword(
         email: email,
@@ -36,43 +73,36 @@ class AuthService {
               context, MaterialPageRoute(builder: (context) => Wrapper()));
         });
       });
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('The password provided is too weak.')),
-        );
-      } else if (e.code == 'email-already-in-use') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Cet email existe deja')),
-        );
-      }
-    } catch (e) {
-      print(e);
-    }
+   
   }
 
   Future<void> signIn(String emailAddress, String password, context) async {
-    try {
+ 
       await _auth.signInWithEmailAndPassword(
           email: emailAddress, password: password);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.red,
-            content: Text('No user found for that mail',style: TextStyle(color:Colors.white),)),
-        );
-      } else if (e.code == 'wrong-password') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.red,
-            content: Text('Mot de passe incorect',style: TextStyle(color:Colors.white),)),
-        );
-      }
-    }
+  
   }
-
+// Future<void> signIn(String emailAddress, String password, context) async {
+//     try {
+//       await _auth.signInWithEmailAndPassword(
+//           email: emailAddress, password: password);
+//     } on FirebaseAuthException catch (e) {
+//       if (e.code == 'user-not-found') {
+//         print('No user found for that email.');
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(
+//             backgroundColor: Colors.red,
+//             content: Text('No user found for that mail',style: TextStyle(color:Colors.white),)),
+//         );
+//       } else if (e.code == 'wrong-password') {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(
+//             backgroundColor: Colors.red,
+//             content: Text('Mot de passe incorect',style: TextStyle(color:Colors.white),)),
+//         );
+//       }
+//     }
+//   }
   Future<void> signOut() async {
     await _auth.signOut();
   }

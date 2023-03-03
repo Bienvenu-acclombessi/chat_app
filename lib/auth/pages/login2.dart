@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../auth_repository/auth_repository.dart';
 import '../widgets/clippath.dart';
 import '../widgets/field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Connexion extends StatefulWidget {
   const Connexion({super.key});
@@ -15,12 +16,47 @@ class Connexion extends StatefulWidget {
 }
 
 class _ConnexionState extends State<Connexion> {
-  
   final keyForm = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passController = TextEditingController();
   bool obsText = true;
   TextInputType? ktype;
+  bool isLoading = false;
+  signIn() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await AuthService()
+          .signIn(emailController.text, passController.text, context);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              backgroundColor: Colors.red,
+              content: Text(
+                'No user found for that mail',
+                style: TextStyle(color: Colors.white),
+              )),
+        );
+      } else if (e.code == 'wrong-password') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              backgroundColor: Colors.red,
+              content: Text(
+                'Mot de passe incorect',
+                style: TextStyle(color: Colors.white),
+              )),
+        );
+      }
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,8 +128,8 @@ class _ConnexionState extends State<Connexion> {
                                   height: 15.h,
                                 ),
                                 Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 10, right: 10),
+                                  padding: const EdgeInsets.only(
+                                      left: 10, right: 10),
                                   child: Container(
                                     height: 50.h,
                                     decoration: BoxDecoration(
@@ -132,8 +168,11 @@ class _ConnexionState extends State<Connexion> {
                                     children: [
                                       TextButton(
                                           onPressed: () {
-                                                                                   Navigator.push(context, MaterialPageRoute(builder: (context)=>ResedPasssword()));
-                                   
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ResedPasssword()));
                                           },
                                           child: Text(
                                             "Mot de passe oublié ?",
@@ -149,23 +188,35 @@ class _ConnexionState extends State<Connexion> {
                                   height: 100.h,
                                 ),
                                 Container(
-                                  margin:
-                                      const EdgeInsets.only(left: 10, right: 10),
+                                  margin: const EdgeInsets.only(
+                                      left: 10, right: 10),
                                   width: double.infinity,
                                   child: ElevatedButton(
-                                      onPressed: () async{
-                                        if (keyForm.currentState!.validate()) {
-                                                await AuthService().signIn(
-                                                    emailController.text,
-                                                    passController.text,
-                                                    context);
-                                              }
-                                           },
+                                      onPressed: () async {
+                                        // if (keyForm.currentState!.validate()) {
+                                        //         await AuthService().signIn(
+                                        //             emailController.text,
+                                        //             passController.text,
+                                        //             context);
+                                        //       }
+                                        if (!isLoading &&
+                                            keyForm.currentState!.validate()) {
+                                          await signIn();
+                                        }
+                                      },
                                       style: ButtonStyle(
                                         backgroundColor:
                                             MaterialStateProperty.all(all),
                                       ),
-                                      child: const Text("Connexion")),
+                                      child: isLoading
+                                          ? SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 3,
+                                              ))
+                                          : Text("Connexion")),
                                 )
                               ],
                             ),
@@ -188,11 +239,11 @@ class _ConnexionState extends State<Connexion> {
                         Expanded(
                           child: TextButton(
                               onPressed: () {
-                           Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                const  Inscription()));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            const Inscription()));
                               },
                               child: Text(
                                 "Inscrivez-vous",

@@ -5,6 +5,7 @@ import '../widgets/clippath.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/field.dart';
 
 import '../widgets/utils.dart';
@@ -24,6 +25,37 @@ class _InscriptionState extends State<Inscription> {
   final passController = TextEditingController();
   bool obsText = true;
   TextInputType? ktype;
+  bool isLoading = false;
+  signUp() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await AuthService().signUp(
+                                                email: emailController.text,
+                                                password: passController.text,
+                                                nom: nameController.text,
+                                                prenom: othernameController.text,
+                                                context: context);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Mot de passe trop petit.')),
+        );
+      } else if (e.code == 'email-already-in-use') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Cet email existe deja')),
+        );
+      }
+    } catch (e) {
+      print(e);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -156,21 +188,25 @@ class _InscriptionState extends State<Inscription> {
                                     width: double.infinity,
                                     child: ElevatedButton(
                                         onPressed: () async {
-                                          if (keyForm.currentState!.validate()) {
-                                       await AuthService().signUp(
-                                                email: emailController.text,
-                                                password: passController.text,
-                                                nom: nameController.text,
-                                                prenom: othernameController.text,
-                                                context: context);
-                                          }
+                                          if (!isLoading &&
+                                            keyForm.currentState!.validate()) {
+                                          await signUp();
+                                        }
                   
                                         },
                                         style: ButtonStyle(
                                           backgroundColor:
                                               MaterialStateProperty.all(all),
                                         ),
-                                        child: const Text("Inscription")),
+                                        child: isLoading
+                                          ? SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 3,
+                                              ))
+                                          : Text("Inscription")),
                                   )
                                 ],
                               ),

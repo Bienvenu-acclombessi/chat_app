@@ -1,11 +1,12 @@
+import 'package:chatapp/auth/pages/password_reset.dart';
 import 'package:chatapp/auth/pages/register2.dart';
 import 'package:chatapp/commun/colors/colors.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../auth_repository/auth_repository.dart';
 import '../widgets/clippath.dart';
 import '../widgets/field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ResedPasssword extends StatefulWidget {
   const ResedPasssword({super.key});
@@ -15,12 +16,41 @@ class ResedPasssword extends StatefulWidget {
 }
 
 class _ResedPassswordState extends State<ResedPasssword> {
-  
   final keyForm = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passController = TextEditingController();
   bool obsText = true;
   TextInputType? ktype;
+  bool isLoading = false;
+  signIn() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await FirebaseAuth.instance
+          .sendPasswordResetEmail(email: emailController.text);
+
+      Navigator.pop(context);
+      //  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>ResedConfirmationCode()));
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'auth/invalid-email') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Email invalide')),
+        );
+      } else if (e.code == 'auth/user-not-found') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Email invalide')),
+        );
+      }
+    } catch (e) {
+      print(e);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,18 +109,20 @@ class _ResedPassswordState extends State<ResedPasssword> {
                                         color: dark),
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 15.h,
-                                ),
                                 Padding(
                                   padding: EdgeInsets.only(top: 10.h),
                                   child: Text(
-                                    "Un mail sera envoyé à cet email",
+                                    "Vous recevrez un mail sur dans votre boite mail qui vous permettra de changer votre mot de passe",
+                                    
+                                        textAlign:TextAlign.center,
                                     style: TextStyle(
                                         fontSize: 10.sp,
                                         fontWeight: FontWeight.bold,
                                         color: dark),
                                   ),
+                                ),
+                                SizedBox(
+                                  height: 15.h,
                                 ),
                                 Field(
                                   nameController: emailController,
@@ -98,55 +130,46 @@ class _ResedPassswordState extends State<ResedPasssword> {
                                   icon: Icons.mail,
                                   hint: "Email",
                                 ),
-                                
+                                SizedBox(
+                                  height: 15.h,
+                                ),
                                 SizedBox(
                                   height: 17.h,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 10),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      
-                                    ],
-                                  ),
-                                ),
+                                
                                 SizedBox(
                                   height: 100.h,
                                 ),
                                 Container(
-                                  margin:
-                                      const EdgeInsets.only(left: 10, right: 10),
+                                  margin: const EdgeInsets.only(
+                                      left: 10, right: 10),
                                   width: double.infinity,
                                   child: ElevatedButton(
-                                      onPressed: () async{
-                                        if (keyForm.currentState!.validate()) {
-                                      try {
-                                         await   FirebaseAuth.instance.sendPasswordResetEmail(email: emailController.text);
-                                      
-                                       Navigator.pop(context);
-                                      //  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>ResedConfirmationCode()));
-                                      }on FirebaseAuthException catch (e) {
-      if (e.code == 'auth/invalid-email') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Email invalide')),
-        );
-      } else if (e.code == 'auth/user-not-found') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Email invalide')),
-        );
-      }
-    } catch (e) {
-      print(e);
-    }
-                                           
-                                              }
-                                           },
+                                      onPressed: () async {
+                                        // if (keyForm.currentState!.validate()) {
+                                        //         await AuthService().signIn(
+                                        //             emailController.text,
+                                        //             passController.text,
+                                        //             context);
+                                        //       }
+                                        if (!isLoading &&
+                                            keyForm.currentState!.validate()) {
+                                          await signIn();
+                                        }
+                                      },
                                       style: ButtonStyle(
                                         backgroundColor:
                                             MaterialStateProperty.all(all),
                                       ),
-                                      child: const Text("Envoyer email")),
+                                      child: isLoading
+                                          ? SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 3,
+                                              ))
+                                          : Text("Envoyez")),
                                 )
                               ],
                             ),
@@ -169,11 +192,11 @@ class _ResedPassswordState extends State<ResedPasssword> {
                         Expanded(
                           child: TextButton(
                               onPressed: () {
-                           Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                const  Inscription()));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            const Inscription()));
                               },
                               child: Text(
                                 "Inscrivez-vous",

@@ -43,7 +43,7 @@ inputdecoration(String name) {
 String? validatioName(String value) {
   if (value.isEmpty) {
     return "Please fill Username";
-  } else if (value.length < 6) {
+  } else if (value.length < 2) {
     return "Username is too short";
   }
   return null;
@@ -53,7 +53,7 @@ String? validatioName(String value) {
 String? validatioFname(String value) {
   if (value.isEmpty) {
     return "Please fill Username";
-  } else if (value.length < 6) {
+  } else if (value.length < 2) {
     return "Username is too short";
   }
   return null;

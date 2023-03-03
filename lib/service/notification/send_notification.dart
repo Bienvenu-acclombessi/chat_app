@@ -9,7 +9,6 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:chatapp/service/notification/demarrage.dart';
 
-import '../../noti_essai.dart';
 class SenderNotification {
   final context;
 
@@ -77,12 +76,7 @@ class SenderNotification {
               isDefaultAction: true,
               onPressed: () async {
                 Navigator.of(context, rootNavigator: true).pop();
-                await Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (BuildContext context) =>
-                        SecondPage(receivedNotification.payload),
-                  ),
-                );
+                
               },
               child: const Text('Ok'),
             )
@@ -94,9 +88,7 @@ class SenderNotification {
 
   void _configureSelectNotificationSubject() {
     selectNotificationStream.stream.listen((String? payload) async {
-      await Navigator.of(context).push(MaterialPageRoute<void>(
-        builder: (BuildContext context) => SecondPage(payload),
-      ));
+     
     });
   }
 

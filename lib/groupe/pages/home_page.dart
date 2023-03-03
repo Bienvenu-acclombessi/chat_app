@@ -190,10 +190,10 @@ class _HomeGroupState extends State<HomeGroup> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Center(
-                      child: Text("Chargement de vos groupes", style: TextStyle(color: Colors.white)),
+                      child: Text("Chargement de vos groupes", style: TextStyle(color: Colors.black)),
                     ),
                     CircularProgressIndicator(
-                      color: Colors.white
+                      color: Colors.black
                     )
                   ],
                 );

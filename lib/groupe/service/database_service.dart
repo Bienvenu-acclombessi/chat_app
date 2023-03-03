@@ -22,7 +22,7 @@ final  uid=FirebaseAuth.instance.currentUser!.uid;
 
   // get user groups
   getUserGroups() async {
-    return userCollection.doc(uid).snapshots();
+    return userCollection.doc(FirebaseAuth.instance.currentUser!.uid).snapshots();
   }
 
   // creating a group
@@ -30,7 +30,7 @@ final  uid=FirebaseAuth.instance.currentUser!.uid;
     final GroupModel groupe= GroupModel(
       groupName:groupName,
       groupIcon: "",
-      admin: uid,
+      admin: FirebaseAuth.instance.currentUser!.uid,
       members: [],
       groupId: "",
       recentMessage: "",
@@ -44,7 +44,7 @@ final  uid=FirebaseAuth.instance.currentUser!.uid;
       "groupId": groupDocumentReference.id,
     });
 
-    DocumentReference userDocumentReference = userCollection.doc(uid);
+    DocumentReference userDocumentReference = userCollection.doc(FirebaseAuth.instance.currentUser!.uid);
     return await userDocumentReference.update({
       "groups":
           FieldValue.arrayUnion([groupDocumentReference.id])
@@ -107,7 +107,7 @@ final  uid=FirebaseAuth.instance.currentUser!.uid;
    //Obtenir ses groupes
     Stream<List<dynamic>> getMygroups() {
    return FirebaseFirestore.instance.collection('users')
-        .doc(uid)
+        .doc(FirebaseAuth.instance.currentUser!.uid)
         .snapshots()
         .asyncMap((event) async {
       List<dynamic> contacts = [];
@@ -132,7 +132,7 @@ final  uid=FirebaseAuth.instance.currentUser!.uid;
   // function -> bool
   Future<bool> isUserJoined(
       String groupName, String groupId, String userName) async {
-    DocumentReference userDocumentReference = userCollection.doc(uid);
+    DocumentReference userDocumentReference = userCollection.doc(FirebaseAuth.instance.currentUser!.uid);
     DocumentSnapshot documentSnapshot = await userDocumentReference.get();
 
     List<dynamic> groups = await documentSnapshot['groups'];
@@ -146,7 +146,7 @@ final  uid=FirebaseAuth.instance.currentUser!.uid;
   // toggling the group join/exit
   Future toggleGroupJoin(String groupId) async {
     // doc reference
-    DocumentReference userDocumentReference = userCollection.doc(uid);
+    DocumentReference userDocumentReference = userCollection.doc(FirebaseAuth.instance.currentUser!.uid);
     DocumentReference groupDocumentReference = groupCollection.doc(groupId);
 
     DocumentSnapshot documentSnapshot = await userDocumentReference.get();
@@ -158,14 +158,14 @@ final  uid=FirebaseAuth.instance.currentUser!.uid;
         "groups": FieldValue.arrayRemove([groupId])
       });
       await groupDocumentReference.update({
-        "members": FieldValue.arrayRemove([uid])
+        "members": FieldValue.arrayRemove([FirebaseAuth.instance.currentUser!.uid])
       });
     } else {
       await userDocumentReference.update({
         "groups": FieldValue.arrayUnion([groupId])
       });
       await groupDocumentReference.update({
-        "members": FieldValue.arrayUnion([uid])
+        "members": FieldValue.arrayUnion([FirebaseAuth.instance.currentUser!.uid])
       });
     }
   }

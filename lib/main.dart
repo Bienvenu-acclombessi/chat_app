@@ -13,7 +13,6 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
 import 'package:chatapp/commun/colors/colors.dart';
-import 'noti_essai.dart';
 import 'service/notification/demarrage.dart';
 
 

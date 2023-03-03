@@ -51,7 +51,7 @@ class _GroupTileState extends State<GroupTile> {
             ));
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
         child: ListTile(
           leading: GroupImage(widget.group.groupIcon),
           title: Text(
