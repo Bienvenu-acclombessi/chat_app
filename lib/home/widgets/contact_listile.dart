@@ -5,7 +5,10 @@ import 'package:chatapp/home/widgets/user_circle.dart';
 import 'package:chatapp/messages/pages/message_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:chatapp/appel/pages/audioCall/audio_page_call.dart';
+import 'package:chatapp/appel/pages/videoCall/video_page_call.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:chatapp/appel/logiques/calltype.dart';
 class ContactListile extends StatefulWidget {
   UserModel user;
    ContactListile({super.key,required this.user});
@@ -42,7 +45,7 @@ class _ContactListileState extends State<ContactListile> {
                 subtitle: Padding(
                   padding: const EdgeInsets.only(top: 3),
                   child: Text(
-                    'En ligne',
+                    'Sur chatApp',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(color: Colors.grey),
@@ -61,8 +64,14 @@ class _ContactListileState extends State<ContactListile> {
                       },
                       color: primary, 
                       icon: Icon(Icons.message))),
-                       Expanded(child: IconButton(onPressed: (){
-                        
+                       Expanded(child: IconButton(onPressed: ()async{
+                        if (await Permission.microphone.request().isGranted) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AudioPageCall(
+                              callType: CallType.calling, user: widget.user)));
+                }
                       },
                       color: primary, 
                       icon: Icon(Icons.call))),

@@ -68,6 +68,8 @@ class _BodyState extends State<Body> {
     } else {
       callId= widget.callId;
       roomId = widget.roomId;
+      await FirebaseFirestore.instance.collection('appel_cours').doc(widget.callId).update({'etat': 1}); //accepter
+       
     await  signaling.joinRoom(
         roomId!,
         _remoteRenderer,

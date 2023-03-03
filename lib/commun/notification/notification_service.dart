@@ -1,5 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-class NotificationService {
+class NotificationMessagingService {
 
   static void initialize() {
     FirebaseMessaging.instance.requestPermission();

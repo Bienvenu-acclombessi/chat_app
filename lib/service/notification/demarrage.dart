@@ -69,12 +69,6 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
   }
 }
 
-/// IMPORTANT: running the following code on its own won't work as there is
-/// setup required for each platform head project.
-///
-/// Please download the complete example app from the GitHub repository where
-/// all the setup has been done
-
 notification_demarrage()async{
   
   final NotificationAppLaunchDetails? notificationAppLaunchDetails = Platform.isLinux

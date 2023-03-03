@@ -1,3 +1,4 @@
+import 'package:chatapp/commun/colors/colors.dart';
 import 'package:chatapp/commun/models/userModel.dart';
 
 import '../../constants.dart';
@@ -17,7 +18,7 @@ class AcceptCallScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
-      backgroundColor: kBackgoundColor,
+      backgroundColor: all,
       body: Body(callId:callId,roomId:roomId,user:user,type:type),
     );
   }

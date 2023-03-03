@@ -1,20 +1,20 @@
-import 'package:chatapp/auth/pages/password_reset.dart';
 import 'package:chatapp/auth/pages/register2.dart';
 import 'package:chatapp/commun/colors/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../auth_repository/auth_repository.dart';
 import '../widgets/clippath.dart';
 import '../widgets/field.dart';
 
-class Connexion extends StatefulWidget {
-  const Connexion({super.key});
+class ResedPasssword extends StatefulWidget {
+  const ResedPasssword({super.key});
 
   @override
-  State<Connexion> createState() => _ConnexionState();
+  State<ResedPasssword> createState() => _ResedPassswordState();
 }
 
-class _ConnexionState extends State<Connexion> {
+class _ResedPassswordState extends State<ResedPasssword> {
   
   final keyForm = GlobalKey<FormState>();
   final emailController = TextEditingController();
@@ -72,7 +72,7 @@ class _ConnexionState extends State<Connexion> {
                                 Padding(
                                   padding: EdgeInsets.only(top: 10.h),
                                   child: Text(
-                                    "Connexion",
+                                    "Mot de passe oublié",
                                     style: TextStyle(
                                         fontSize: 25.sp,
                                         fontWeight: FontWeight.bold,
@@ -82,46 +82,23 @@ class _ConnexionState extends State<Connexion> {
                                 SizedBox(
                                   height: 15.h,
                                 ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 10.h),
+                                  child: Text(
+                                    "Un mail sera envoyé à cet email",
+                                    style: TextStyle(
+                                        fontSize: 10.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: dark),
+                                  ),
+                                ),
                                 Field(
                                   nameController: emailController,
                                   ktype: TextInputType.emailAddress,
                                   icon: Icons.mail,
                                   hint: "Email",
                                 ),
-                                SizedBox(
-                                  height: 15.h,
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 10, right: 10),
-                                  child: Container(
-                                    height: 50.h,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 20),
-                                      child: TextFormField(
-                                        controller: passController,
-                                        keyboardType: TextInputType.text,
-                                        obscureText: obsText,
-                                        decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            suffixIcon: GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    obsText = !obsText;
-                                                  });
-                                                },
-                                                child: Icon(obsText
-                                                    ? Icons.visibility
-                                                    : Icons.visibility_off)),
-                                            hintText: "Mot de passe"),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                
                                 SizedBox(
                                   height: 17.h,
                                 ),
@@ -130,18 +107,7 @@ class _ConnexionState extends State<Connexion> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      TextButton(
-                                          onPressed: () {
-                                                                                   Navigator.push(context, MaterialPageRoute(builder: (context)=>ResedPasssword()));
-                                   
-                                          },
-                                          child: Text(
-                                            "Mot de passe oublié ?",
-                                            style: TextStyle(
-                                                fontSize: 13.h,
-                                                fontWeight: FontWeight.w400,
-                                                color: dark),
-                                          )),
+                                      
                                     ],
                                   ),
                                 ),
@@ -155,17 +121,32 @@ class _ConnexionState extends State<Connexion> {
                                   child: ElevatedButton(
                                       onPressed: () async{
                                         if (keyForm.currentState!.validate()) {
-                                                await AuthService().signIn(
-                                                    emailController.text,
-                                                    passController.text,
-                                                    context);
+                                      try {
+                                         await   FirebaseAuth.instance.sendPasswordResetEmail(email: emailController.text);
+                                      
+                                       Navigator.pop(context);
+                                      //  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>ResedConfirmationCode()));
+                                      }on FirebaseAuthException catch (e) {
+      if (e.code == 'auth/invalid-email') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Email invalide')),
+        );
+      } else if (e.code == 'auth/user-not-found') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Email invalide')),
+        );
+      }
+    } catch (e) {
+      print(e);
+    }
+                                           
                                               }
                                            },
                                       style: ButtonStyle(
                                         backgroundColor:
                                             MaterialStateProperty.all(all),
                                       ),
-                                      child: const Text("Connexion")),
+                                      child: const Text("Envoyer email")),
                                 )
                               ],
                             ),

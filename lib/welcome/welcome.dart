@@ -57,7 +57,7 @@ class _OnboardingState extends State<Onboarding> {
                   ),
                   Expanded(
                     child: Text(
-                      "let's find your informaticien partner \nto enjoy and learn learn more",
+                      "Commencez une nouvelle discussion,une nouvelle amitié,une nouvelle aventure ... sur chatApp",
                       style: TextStyle(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w400,
@@ -87,7 +87,7 @@ class _OnboardingState extends State<Onboarding> {
             
                               },
                               child: Text(
-                                "Get Started",
+                                "Demarrer",
                                 style: TextStyle(fontSize: 15.sp, color: white),
                               ),
                             ),

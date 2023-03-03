@@ -160,9 +160,11 @@ class _MorePageState extends ConsumerState<MorePage> {
                   onPress: () {},
                   endIcon: true),
               ProfilMenuWidget(
-                title: "Logout",
+                title: "Se deconnecter",
                 icon: Icons.logout,
-                onPress: () {},
+                onPress: () async{
+                await  FirebaseAuth.instance.signOut();
+                },
                 endIcon: false,
                 textColor: all,
               )

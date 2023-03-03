@@ -64,7 +64,7 @@ class ChatRepository {
    Stream<List<dynamic>> getAllAppels(){
    return firestore
         .collection('appel_cours')
-        .where('id_receiver',isEqualTo: auth.currentUser!.uid)
+        .where('members',arrayContains: auth.currentUser!.uid)
         .where('etat', isEqualTo: 2)
         .snapshots()
         .asyncMap((event) async{
@@ -124,6 +124,26 @@ class ChatRepository {
    }
 
 
+   Stream<List<dynamic>> getAllContactAvatar() {
+   return firestore
+        .collection('users')
+        .doc(auth.currentUser!.uid)
+        .collection('chats')
+        .snapshots()
+        .asyncMap((event) async {
+      List<dynamic> contacts = [];
+      for (var document in event.docs) {
+        final lastMessage = LastMessageModel.fromMap(document.data());
+        final userData = await firestore
+            .collection('users')
+            .doc(lastMessage.contactId)
+            .get();
+        final user = UserModel.fromMap(userData.data()!);
+        contacts.add(user);
+      }
+      return contacts;
+    });
+   }
    Stream<List<dynamic>> getAllContactsNoGroup(groupId) {
    return firestore
         .collection('users')

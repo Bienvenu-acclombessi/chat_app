@@ -32,7 +32,7 @@ class AuthService {
             .collection('users')
             .doc(value.user!.uid)
             .set(user.toMap()).then((add_success) {
-          Navigator.push(
+          Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => Wrapper()));
         });
       });

@@ -16,10 +16,9 @@ class UserOnline extends ConsumerStatefulWidget {
 class _UserOnlineState extends ConsumerState<UserOnline> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-          height: 100,  
-          child: StreamBuilder<List<UserModel>>(
-        stream: ref.watch(chatControllerProvider).getAllUser(),
+    return SizedBox( 
+          child: StreamBuilder<List<dynamic>>(
+        stream: ref.watch(chatControllerProvider).getAllContacts(),
         builder: (_, snapshot) {
           if ( snapshot.connectionState != ConnectionState.active) {
             return const Center(
@@ -29,35 +28,41 @@ class _UserOnlineState extends ConsumerState<UserOnline> {
             );
           }
             if(snapshot.hasData){
-          return ListView.builder(
-            scrollDirection : Axis.horizontal,
-            itemCount: snapshot.data!.length ,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              final user = snapshot.data![index];
-              return GestureDetector(
-                onTap: (){
+              if(snapshot.data!.length>5){ 
+          return SizedBox(
+          height: 100, 
+            child: ListView.builder(
+              scrollDirection : Axis.horizontal,
+              itemCount: snapshot.data!.length ,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                final user = snapshot.data![index];
+                return GestureDetector(
+                  onTap: (){
 Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ChatRoom(user: user) ));
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ChatRoom(user: user) ));
         
-                },
-                child: Container(
-                  margin: const EdgeInsets.all(5),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      UserAvatar(user: user),
-                      Text("${user.prenom}",overflow: TextOverflow.ellipsis,)
-                    ],
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.all(5),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        UserAvatar(user: user),
+                        Text("${user.prenom}",overflow: TextOverflow.ellipsis,)
+                      ],
+                    ),
                   ),
-                ),
-              );
-                
-            },
-          );
-            }
+                );
+                  
+              },
+            ),
+          );}else{
+return SizedBox();
+            
+          } }
             else{
           return SizedBox();
         }

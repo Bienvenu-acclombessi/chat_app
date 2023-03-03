@@ -53,9 +53,11 @@ class _CallListState extends ConsumerState<CallList> {
                     borderRadius: BorderRadius.circular(20), color: all),
                 child: IconButton(
                     onPressed: () {
-                      Navigator.push(
-                        context, MaterialPageRoute(builder: (context)=>SearchPage())
-                      );
+                       ref.read(chatControllerProvider).getAllUsers().then((users){
+  Navigator.push(
+                        context, MaterialPageRoute(builder: (context)=>SearchPage(data: users,))
+                      );                
+  });       
                     },
                     icon: const Icon(
                       Icons.search_rounded,

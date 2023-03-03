@@ -1,7 +1,7 @@
 import 'package:chatapp/auth/auth_repository/auth_repository.dart';
 import 'package:chatapp/home/widgets/last_message_list.dart';
 import 'package:chatapp/home/widgets/user_online.dart';
-import 'package:chatapp/messages/pages/message_page.dart';
+import 'package:chatapp/service/notification/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -88,8 +88,10 @@ class _MyHomeState extends ConsumerState<MyHome> {
         floatingActionButton: FloatingActionButton(
           backgroundColor: primary,
           child: Icon(Icons.add,color:Colors.white ),
-          onPressed: (){
+          onPressed: ()async{
+          // await  NotificationService(context: context).appelNotification();
             ref.read(chatControllerProvider).getAllUsers().then((users){
+            
   Navigator.push(
                         context, MaterialPageRoute(builder: (context)=>SearchPage(data: users,))
                       );                

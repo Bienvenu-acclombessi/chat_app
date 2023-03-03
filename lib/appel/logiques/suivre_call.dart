@@ -29,14 +29,15 @@ class ChatAppel {
                   'id_receiver': id_receiver,
                   'callerId': auth.currentUser!.uid,
                   'etat': 0,
-                  'type': type
+                  'type': type,
+                  'members': [id_receiver,auth.currentUser!.uid],
                 }).then((value) {
                    id=value.id;
                 });
   return id;
   }
   
-  getNewCall(BuildContext context) async{
+ void getNewCall(BuildContext context) async{
     firestore
         .collection('appel_cours')
         .where('id_receiver',isEqualTo: auth.currentUser!.uid)
@@ -49,10 +50,15 @@ class ChatAppel {
             .doc(call.get('callerId'))
             .get();
             final req={'callId': call.id,'user': UserModel.fromMap(userData.data()!),'roomId': call.get('roomId'),'type':call.get('roomId') };
-          return req;
+       
+       Navigator.push(context,MaterialPageRoute(builder: (context)=>AcceptCallScreen(
+                  callId: call.id,
+                  roomId: call.get('roomId'),
+                  user: UserModel.fromMap(userData.data()!),
+                  type: call.get('type'))));
       }
+      return ;
     });
-    return null;
    }
       
 }

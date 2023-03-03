@@ -1,3 +1,4 @@
+import 'package:chatapp/appel/logiques/suivre_call.dart';
 import 'package:chatapp/appel/pages/audioCall/audio_page_call.dart';
 import 'package:chatapp/appel/pages/videoCall/video_page_call.dart';
 import 'package:chatapp/commun/colors/colors.dart';
@@ -20,16 +21,18 @@ class ChatRoom extends StatefulWidget {
 }
 
 class _ChatRoomState extends State<ChatRoom> {
-  ImageProvider<Object>? userImage(String url){
-    if(url.isNotEmpty)
-    {
-      return NetworkImage(widget.user.profileImageUrl!) ;
-    }else{
-      return const AssetImage('assets/images/userImage.png') ;
+  ImageProvider<Object>? userImage(String url) {
+    if (url.isNotEmpty) {
+      return NetworkImage(widget.user.profileImageUrl!);
+    } else {
+      return const AssetImage('assets/images/userImage.png');
     }
   }
+
   @override
   Widget build(BuildContext context) {
+    
+    
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
@@ -41,11 +44,11 @@ class _ChatRoomState extends State<ChatRoom> {
           children: [
             InkWell(
               onTap: () {
-             //   Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage(user: widget.user)));
+                //   Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfilePage(user: widget.user)));
               },
               child: CircleAvatar(
                 radius: 30,
-                backgroundImage: userImage(widget.user.profileImageUrl!) ,
+                backgroundImage: userImage(widget.user.profileImageUrl!),
               ),
             ),
             const SizedBox(
@@ -55,23 +58,21 @@ class _ChatRoomState extends State<ChatRoom> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(widget.user.prenom),
-                const Text(
-                  'Online',
-                  style: TextStyle(color: Color(0xffD9D9D9), fontSize: 14),
-                )
+                
               ],
             ),
           ],
         ),
         actions: [
           IconButton(
-              onPressed: () async{
-                if (await Permission.camera.request().isGranted) {
-                          if (await Permission.microphone.request().isGranted) {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>AudioPageCall(callType: CallType.calling , user: widget.user)));
-        
-}
-}
+              onPressed: () async {
+                if (await Permission.microphone.request().isGranted) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AudioPageCall(
+                              callType: CallType.calling, user: widget.user)));
+                }
               },
               icon: Icon(
                 Icons.videocam,
@@ -79,13 +80,17 @@ class _ChatRoomState extends State<ChatRoom> {
                 size: 20,
               )),
           IconButton(
-              onPressed: () async{
-                       if (await Permission.camera.request().isGranted) {
-                          if (await Permission.microphone.request().isGranted) {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>VideoPageCall(callType: CallType.calling , user: widget.user)));
-        
-}
-}
+              onPressed: () async {
+                if (await Permission.camera.request().isGranted) {
+                  if (await Permission.microphone.request().isGranted) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => VideoPageCall(
+                                callType: CallType.calling,
+                                user: widget.user)));
+                  }
+                }
               },
               icon: const Icon(
                 Icons.call,
@@ -94,19 +99,19 @@ class _ChatRoomState extends State<ChatRoom> {
               ))
         ],
       ),
-      backgroundColor: primary ,
+      backgroundColor: primary,
       body: Column(
         children: [
           //detail du chat
-         ChatDetail(user: widget.user),
-        //  fin detail 
-        Consumer(builder: (BuildContext context, WidgetRef ref, Widget? chil) {
-          return(MessageSender(
-                    friendUid: widget.user.uid,
-                    ref: ref,
-                  ));
-        })
-                  
+          ChatDetail(user: widget.user),
+          //  fin detail
+          Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? chil) {
+            return (MessageSender(
+              friendUid: widget.user.uid,
+              ref: ref,
+            ));
+          })
         ],
       ),
     );

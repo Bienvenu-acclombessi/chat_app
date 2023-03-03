@@ -71,13 +71,15 @@ class _BodyState extends State<Body> {
           _localVideoRenderer.dispose();
           _remoteRenderer.dispose();
 
-          Navigator.push(
+          Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => Wrapper()));
         }
       });
     } else {
       callId = widget.callId;
       roomId = widget.roomId;
+      await FirebaseFirestore.instance.collection('appel_cours').doc(widget.callId).update({'etat': 1}); //accepter
+       
       await signaling.joinRoom(
         roomId!,
         _remoteRenderer,

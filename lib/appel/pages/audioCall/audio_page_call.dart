@@ -1,3 +1,4 @@
+import 'package:chatapp/commun/colors/colors.dart';
 import 'package:flutter/material.dart';
 
 import '../../../commun/models/userModel.dart';
@@ -16,6 +17,7 @@ class AudioPageCall extends StatelessWidget {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
+      backgroundColor: all,
       body: Body(callId:callId,roomId:roomId,user:user,callType:callType),
     );
   }

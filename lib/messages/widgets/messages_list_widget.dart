@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:chatapp/appel/logiques/suivre_call.dart';
 import 'package:chatapp/commun/colors/colors.dart';
 import 'package:chatapp/commun/widgets/error_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -90,6 +91,7 @@ class _ChatDetailState extends ConsumerState<ChatDetail> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(chatAppelProvider).getNewCall(context);
     final width = MediaQuery.of(context).size.width;
     return Expanded(
       child: StreamBuilder(
